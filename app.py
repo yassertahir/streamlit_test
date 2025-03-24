@@ -217,8 +217,8 @@ with st.sidebar:
             for uploaded_file in uploaded_files:
                 if uploaded_file.name not in st.session_state.processed_files:
                     # Build a full path based on the current file's directory
-                    temp_file_path = os.path.join(BASE_DIR, f"temp_{uploaded_file.name}")
-                    
+                    temp_file_path = os.path.join(BASE_DIR, f"{uploaded_file.name}")
+                    # print(temp_file_path)
                     # Write the file to that path
                     with open(temp_file_path, "wb") as f:
                         f.write(uploaded_file.getbuffer())
@@ -227,7 +227,7 @@ with st.sidebar:
                         # Upload file to OpenAI
                         file = client.files.create(
                             file=open(temp_file_path, "rb"),
-                            purpose="assistants"
+                            purpose="assistants"  # This is critical
                         )
                         
                         # Add to our tracking lists
@@ -251,6 +251,7 @@ with st.sidebar:
             if file_ids:
                 # Wait for any active runs
                 wait_for_active_runs(client, st.session_state.thread_id)
+                
                 
                 # Separate CSV files from other files for appropriate handling
                 csv_files = [f for f in file_ids if f["file_name"].lower().endswith('.csv')]
@@ -290,10 +291,13 @@ with st.sidebar:
                     }],
                     attachments=attachments + csv_attachments  # Combine all attachments
                 )
-                
+                st.sidebar.write(f"Attaching files: {[a['file_id'] for a in attachments]}")
+                # run = client.beta.threads.runs.create(
+                # thread_id=thread_id,
+                # assistant_id=assistant_id)
                 # Wait for any active runs that message might create
                 wait_for_active_runs(client, st.session_state.thread_id)
-                
+                time.sleep(5)  # Give OpenAI time to process the file
                 # Create a run to analyze all files
                 with st.spinner("Analyzing files..."):
                     has_csv = any(file.endswith('.csv') for file in file_names)
@@ -308,7 +312,7 @@ with st.sidebar:
                     if has_pdf and has_csv:
                         instructions += "Use both the business plan in the PDF and analyze the competitive data in the CSV files. "
                     
-                    instructions += "Use your VC evaluation framework and the configured functions to evaluate the startup proposal. If team CVs are attached then use them as well to provide feedback specific to the team."
+                    instructions += "Use your VC evaluation framework and the configured functions to evaluate the startup proposal." # If team CVs are attached then use them as well to provide feedback specific to the team."
                     
                     # Run the assistant
                     run = client.beta.threads.runs.create(
@@ -323,7 +327,7 @@ with st.sidebar:
                     # Add message to chat history
                     st.session_state.messages.append({
                         "role": "user", 
-                        "content": instructions #f"I've uploaded {len(file_names)} files for analysis: {', '.join(file_names)}"
+                        "content": message_text #f"I've uploaded {len(file_names)} files for analysis: {', '.join(file_names)}"
                     })
                     
                     # Get the response

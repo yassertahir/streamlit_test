@@ -303,18 +303,40 @@ with st.sidebar:
                     has_csv = any(file.endswith('.csv') for file in file_names)
                     has_pdf = any(file.endswith('.pdf') for file in file_names)
                     
-                    # Build appropriate instructions
+                    # Build dynamic instructions
                     instructions = "Please analyze all the uploaded files together to provide a comprehensive evaluation. "
-                    
+
                     if has_csv:
                         instructions += "For CSV files, use the code_interpreter tool to analyze the data. "
-                        
+
                     if has_pdf and has_csv:
                         instructions += "Use both the business plan in the PDF and analyze the competitive data in the CSV files. "
-                    
-                    instructions += "Use your VC evaluation framework and the configured functions to evaluate the startup proposal." # If team CVs are attached then use them as well to provide feedback specific to the team."
-                    
-                    # Run the assistant
+
+                    instructions += (
+                        "Use your VC evaluation framework and the configured functions to evaluate the startup proposal. "
+                    )
+
+                    # Append final, more detailed section
+                    instructions += """
+                    Please provide a comprehensive evaluation of the attached startup proposal. 
+                    Follow the structure below and ensure each bullet is explained in multiple sentences or paragraphs:
+
+                    1. Summary of the proposal
+                    2. Strengths 
+                    3. Areas for improvement
+                    4. Team assessment (with LinkedIn profiles and a detailed table of team members if CVs are provided)
+                    5. Competitive analysis
+                    6. Overall score (1-10)
+                    7. Final recommendation
+
+                    At the end, always provide a Team Table with columns:
+                    - Experience Summary
+                    - Contact Details from CV
+
+                    Remember to reference all attached files (PDFs, CSVs, etc.) during the analysis.
+                    """
+
+                    # Use this combined instructions string when creating the run
                     run = client.beta.threads.runs.create(
                         thread_id=st.session_state.thread_id,
                         assistant_id=st.session_state.assistant_id,

@@ -373,63 +373,63 @@ with st.sidebar:
                 st.rerun()
     
 
-# Button to record audio
-transcribed_text = ""
-if st.button("Start Recording"):
-    try:
-        transcribed_text = transcribe_speech()
-        st.write("Transcription:")
-        st.write(transcribed_text)
-    except Exception as e:
-        st.error(f"Transcription error: {e}")
+# # Button to record audio
+# transcribed_text = ""
+# if st.button("Start Recording"):
+#     try:
+#         transcribed_text = transcribe_speech()
+#         st.write("Transcription:")
+#         st.write(transcribed_text)
+#     except Exception as e:
+#         st.error(f"Transcription error: {e}")
 
-# Chat input
-text_input = st.chat_input("Enter your startup proposal or question")
+# # Chat input
+# text_input = st.chat_input("Enter your startup proposal or question")
 
-# If the user didn't type anything, but did record audio, use the transcribed text
-if not text_input and transcribed_text:
-    text_input = transcribed_text
+# # If the user didn't type anything, but did record audio, use the transcribed text
+# if not text_input and transcribed_text:
+#     text_input = transcribed_text
 
-if text_input:
-    # Optionally add a note to the input for guardrails
-    final_user_input = f"{text_input}\n\n(Please follow the VC evaluation framework and refuse irrelevant requests)."
+# if text_input:
+#     # Optionally add a note to the input for guardrails
+#     final_user_input = f"{text_input}\n\n(Please follow the VC evaluation framework and refuse irrelevant requests)."
 
-    # Display user message
-    with st.chat_message("user"):
-        st.write(text_input)
-
-    # Create message in your thread
-    create_message(client, st.session_state.thread_id, final_user_input)
-
-    # Get assistant response
-    with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            response_content = get_response(client, st.session_state.thread_id, st.session_state.assistant_id)
-            st.write(response_content)   
-# # User input area
-# user_input = st.chat_input("Enter your startup proposal or question")
-
-# if user_input:
-#     # Add user message to chat history
-#     final_user_input = f"{user_input}\n\n(Please follow the VC evaluation framework and refuse irrelevant requests)."
-
-#     # Add user message to chat history
-#     st.session_state.messages.append({"role": "user", "content": final_user_input})
-    
 #     # Display user message
 #     with st.chat_message("user"):
-#         st.write(user_input)
-    
-#     # Create message in thread
+#         st.write(text_input)
 
-#     create_message(client, st.session_state.thread_id, user_input)
-    
+#     # Create message in your thread
+#     create_message(client, st.session_state.thread_id, final_user_input)
+
 #     # Get assistant response
 #     with st.chat_message("assistant"):
 #         with st.spinner("Thinking..."):
 #             response_content = get_response(client, st.session_state.thread_id, st.session_state.assistant_id)
-#             st.write(response_content)
+#             st.write(response_content)   
+# User input area
+user_input = st.chat_input("Enter your startup proposal or question")
+
+if user_input:
+    # Add user message to chat history
+    final_user_input = f"{user_input}\n\n(Please follow the VC evaluation framework and refuse irrelevant requests)."
+
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": final_user_input})
     
-#     # Add assistant response to chat history
-#     st.session_state.messages.append({"role": "assistant", "content": response_content})
+    # Display user message
+    with st.chat_message("user"):
+        st.write(user_input)
+    
+    # Create message in thread
+
+    create_message(client, st.session_state.thread_id, user_input)
+    
+    # Get assistant response
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            response_content = get_response(client, st.session_state.thread_id, st.session_state.assistant_id)
+            st.write(response_content)
+    
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": response_content})
 

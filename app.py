@@ -48,13 +48,13 @@ def get_or_create_assistant_and_thread():
                     st.sidebar.warning(f"Assistant retrieval error: {e}")
                     assistant_id = None
                     
-                # Verify the thread still exists
-                try:
-                    thread = client.beta.threads.retrieve(data.get("thread_id", ""))
-                    thread_id = data["thread_id"]
-                except Exception as e:
-                    st.sidebar.warning(f"Thread retrieval error: {e}")
-                    thread_id = None
+                # # Verify the thread still exists
+                # try:
+                #     thread = client.beta.threads.retrieve(data.get("thread_id", ""))
+                #     thread_id = data["thread_id"]
+                # except Exception as e:
+                #     st.sidebar.warning(f"Thread retrieval error: {e}")
+                #     thread_id = None
     except Exception as e:
         st.sidebar.warning(f"Storage file error: {e}")
         assistant_id = None
@@ -82,8 +82,8 @@ def get_or_create_assistant_and_thread():
         os.makedirs(os.path.dirname(STORAGE_FILE), exist_ok=True)
         with open(STORAGE_FILE, "w") as f:
             json.dump({
-                "assistant_id": assistant_id,
-                "thread_id": thread_id
+                "assistant_id": assistant_id
+                # "thread_id": thread_id
             }, f)
         st.sidebar.success("Assistant data saved successfully!")
     except Exception as e:
@@ -329,8 +329,8 @@ with st.sidebar:
                     Please provide a comprehensive evaluation of the attached startup proposal. 
                     Follow the structure below and ensure each bullet is explained in multiple sentences or paragraphs:
 
-                    1. Summary of the proposal
-                    2. Strengths 
+                    1. Summary of the proposal (Use proposal summary or pitch deck)
+                    2. Strengths (Use proposal summary or pitch deck)
                     3. Areas for improvement
                     4. Team assessment (with LinkedIn profiles and a detailed table of team members if CVs are provided)
                     5. Competitive analysis
